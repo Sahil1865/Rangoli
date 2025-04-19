@@ -15,7 +15,6 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   int _selectedIndex = 0;
 
-  // Your pages that will change based on bottom nav index
   final List<Widget> _pages = [
     const HomeContentPage(),
     const CategoriesPage(),
@@ -33,16 +32,18 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        SystemNavigator.pop(); // This exits the app
-        return false; // Prevents going back
+        SystemNavigator.pop();
+        return false;
       },
       child: Scaffold(
         backgroundColor: Colors.white,
         appBar: AppBar(
-          automaticallyImplyLeading: false, // Remove back button
+          automaticallyImplyLeading: false,
           backgroundColor: Colors.white,
           elevation: 0,
-          title: Row(
+          title: _selectedIndex == 3
+              ? const Text("My Account", style: TextStyle(color: Colors.black))
+              : Row(
             children: [
               const Text(
                 'Delivery address',
@@ -61,47 +62,42 @@ class _HomeState extends State<Home> {
                     ),
                   );
                 }).toList(),
-                onChanged: (value) {
-                  // Handle address change
-                },
+                onChanged: (value) {},
                 icon: const Icon(Icons.arrow_drop_down, color: Colors.black),
                 underline: Container(),
               ),
             ],
           ),
         ),
-        body:
-        Padding(
+        body: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 5),
           child: Column(
             children: [
               const SizedBox(height: 0),
-              // Search Bar always stays at top
-              GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const SearchResultPage()),
-                  );
-                },
-                child: TextField(
-                  enabled: false, // Prevent direct editing
-                  decoration: InputDecoration(
-
-                    filled: true,
-                    fillColor: Colors.grey[200],
-                    prefixIcon: const Icon(Icons.search, color: Colors.grey),
-                    hintText: 'Search here ...',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide.none,
+              if (_selectedIndex != 3)
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const SearchResultPage()),
+                    );
+                  },
+                  child: TextField(
+                    enabled: false,
+                    decoration: InputDecoration(
+                      filled: true,
+                      fillColor: Colors.grey[200],
+                      prefixIcon: const Icon(Icons.search, color: Colors.grey),
+                      hintText: 'Search here ...',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide.none,
+                      ),
                     ),
                   ),
                 ),
-              ),
               const SizedBox(height: 0),
-              // This section changes based on _selectedIndex
               Expanded(
                 child: _pages[_selectedIndex],
               ),
@@ -137,7 +133,6 @@ class _HomeState extends State<Home> {
     );
   }
 }
-
 
 class SearchResultPage extends StatefulWidget {
   const SearchResultPage({super.key});
@@ -189,9 +184,7 @@ class _SearchResultPageState extends State<SearchResultPage> {
         actions: [
           IconButton(
             icon: const Icon(Icons.shopping_cart, color: Colors.black),
-            onPressed: () {
-              // Handle cart action
-            },
+            onPressed: () {},
           ),
         ],
       ),
@@ -204,7 +197,6 @@ class _SearchResultPageState extends State<SearchResultPage> {
               'Search result for "$_searchQuery"',
               style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
-            // Placeholder for search results
             Expanded(
               child: Center(
                 child: Text(

@@ -1,9 +1,28 @@
 import 'package:emart_app/views/splash_screen/splash_screen.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'consts/consts.dart';
 import 'home_screen/home.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:flutter/foundation.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  if (kIsWeb) {
+    await Firebase.initializeApp(
+      options: FirebaseOptions(
+        apiKey: "AIzaSyCrXJZl22VHl4v_04I3QlrTuyTGfOOldgU",
+        authDomain: "rangolistore-e55e9.firebaseapp.com",
+        projectId: "rangolistore-e55e9",
+        storageBucket: "rangolistore-e55e9.appspot.com",
+        messagingSenderId: "911543359195",
+        appId: "1:911543359195:android:e64eb69381b12c2763defe",
+      ),
+    );
+  } else {
+    await Firebase.initializeApp();
+  }
   runApp(const MyApp());
 }
 
@@ -15,6 +34,17 @@ class MyApp extends StatelessWidget {
     //GetMaterialApp because we are using getx
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        scaffoldBackgroundColor: Colors.transparent,
+        appBarTheme: const  AppBarTheme(
+          iconTheme: IconThemeData(
+            //to set app bar icon color
+            color: darkFontGrey
+          ),
+          elevation: 0.0,
+          backgroundColor: Colors.transparent
+        )
+      ),
       home: const SplashScreen(),
       routes: {
 

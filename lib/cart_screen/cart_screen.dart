@@ -6,7 +6,7 @@ class CartPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      child: Text('Cart Page'),
+      child: "Cart is Empty!".text.fontFamily(semibold).color(darkFontGrey).makeCentered(),
     );
   }
 }

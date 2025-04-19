@@ -17,3 +17,15 @@ const decor="Decoration Items";
 const disposables="Disposable Items";
 const electronics="Electronics";
 const schoolsupplies= "School Supplies";
+const allproducts= "All Products";
+
+//item details strings
+const reviews="Reviews",
+    sellerpolicy= "Seller Policy",
+    returnpolicy= "Return Policy",
+    supportpolicy= "Support Policy";
+
+//profile strings
+
+const logout="Logout";
+const wishlist="My Wishlist", orders= "My Orders", messages= "Messages";

@@ -1,4 +1,9 @@
+import 'dart:convert';
+
+import 'package:emart_app/auth_screen/login_screen.dart';
+
 import '../consts/consts.dart';
+import 'package:http/http.dart' as http;
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -8,8 +13,52 @@ class RegisterScreen extends StatefulWidget {
 }
 
 class _RegisterScreenState extends State<RegisterScreen> {
-
+  final nameController=TextEditingController();
+  final emailController=TextEditingController();
+  final phoneController=TextEditingController();
+  final passwordController=TextEditingController();
+  final confpasswordController=TextEditingController();
+  @override
+  dispose(){
+    nameController.dispose();
+    emailController.dispose();
+    phoneController.dispose();
+    passwordController.dispose();
+    confpasswordController.dispose();
+    super.dispose();
+  }
   bool? isCheck=false;
+  Future<void> RegisterUser()async {
+    if(!isCheck!){
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Please Accept The Terms and Conditions!"),));
+          return;
+    }
+    if(passwordController.text!=confpasswordController.text){
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("The passwords do not match!"),));
+      return;
+    }
+    final url=Uri.parse("http://localhost:8080/api/register");
+    try {
+      final response = await http.post(
+        url,
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode({
+          "username": nameController.text.trim(),
+          "email": emailController.text.trim(),
+          "phonenum": phoneController.text.trim(),
+          "password": passwordController.text.trim()
+        }),
+      );
+      if(response.statusCode==201){
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("User Registered Successfully!"),));
+        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>LoginScreen()));
+      }
+      else{
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Failed To Register!: ${response.body}"),));
+    }
+    }catch(e){ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error: $e")),);}
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -57,15 +106,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 const SizedBox(height: 30),
 
                 // Input fields
-                _buildInputField(icon: Icons.person_outline, hintText: "NAME"),
+                _buildInputField(icon: Icons.person_outline, hintText: "NAME", controller:nameController),
                 const SizedBox(height: 15),
-                _buildInputField(icon: Icons.email_outlined, hintText: "EMAIL"),
+                _buildInputField(icon: Icons.email_outlined, hintText: "EMAIL", controller:emailController),
                 const SizedBox(height: 15),
-                _buildInputField(icon: Icons.phone_outlined, hintText: "PHONE NUMBER"),
+                _buildInputField(icon: Icons.phone_outlined, hintText: "PHONE NUMBER",controller:phoneController),
                 const SizedBox(height: 15),
-                _buildInputField(icon: Icons.lock_outline, hintText: "PASSWORD", isPassword: true),
+                _buildInputField(icon: Icons.lock_outline, hintText: "PASSWORD", isPassword: true, controller:passwordController),
                 const SizedBox(height: 20),
-                _buildInputField(icon: Icons.lock_outline, hintText: "RETYPE PASSWORD", isPassword: true),
+                _buildInputField(icon: Icons.lock_outline, hintText: "RETYPE PASSWORD", isPassword: true, controller:confpasswordController),
                 const SizedBox(height: 20),
 
                 Row(
@@ -117,7 +166,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ],
                 ),
                 // Register Button
-                _buildButton(text: "REGISTER", onPressed: () {}),
+                _buildButton(text: "REGISTER", onPressed: RegisterUser),
               ],
             ),
           ),
@@ -129,8 +178,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
   }
 
-  Widget _buildInputField({required IconData icon, required String hintText, bool isPassword = false}) {
+  Widget _buildInputField({required IconData icon, required String hintText, bool isPassword = false, required controller}) {
     return TextField(
+      controller: controller,
       obscureText: isPassword,
       style: const TextStyle(color: Colors.white),
       decoration: InputDecoration(
