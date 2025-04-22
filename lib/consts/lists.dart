@@ -16,6 +16,7 @@ const featuredTitlesList1= [stationery,gifts,accessories];
 const featuredTitlesList2= [sports,toys,games];
 
 const categoriesList = [stationery, schoolsupplies, toys, gifts, sports, accessories, decor, disposables, electronics];
+const categoriesListDB = [stationeryDB, schoolsuppliesDB, toysDB, giftsDB, sportsDB, accessoriesDB, decorDB, disposablesDB, electronicsDB];
 const categoriesImages = [imgFcStationery, imgFcSchoolSupplies, imgFcToys, imgFcGifts, imgFcSports, imgFcAccerories, imgFcDecor, imgFcDisposables, imgFcElectronics ];
 
 const itemDetailButtonsList= [reviews, privacyPolicy, returnpolicy, supportpolicy];

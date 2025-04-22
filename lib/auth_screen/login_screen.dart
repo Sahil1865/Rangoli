@@ -34,19 +34,13 @@ class LoginScreenState extends State<LoginScreen>{
     }
     final url=Uri.parse("http://localhost:8080/api/login");
     try{
-      final response=await http.post(
-        url,
-        headers: {"Content-Type":"application/json"},
-        body: jsonEncode({
-          "email":emailController.text.trim(),
-          "password":passwordController.text.trim(),
-        }),
-      );
-      if(response.statusCode==200){
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Login Successful!")));
+      final credential=await FirebaseAuth.instance.signInWithEmailAndPassword(
+          email: emailController.text.trim(), 
+          password: passwordController.text.trim());
+      final user=credential.user;
+      if(user!=null){
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Login Successful")));
         Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>Home()));
-      }else{
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Incorrect Email or Password")));
       }
     }catch(e){ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Failed To Login: $e"),));}
   }
@@ -66,18 +60,49 @@ class LoginScreenState extends State<LoginScreen>{
     }catch(e){ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error: $e")));}
   }
 
-  Future<UserCredential> signInWithGoogle()async{
-    final GoogleSignIn googleSignIn=new GoogleSignIn(clientId: "911543359195-9fjnh5cp2tspg5fm3ec1k882fkmeuhrt.apps.googleusercontent.com");
-    final GoogleSignInAccount? googleUser=await googleSignIn.signIn();
-    if(googleUser==null){
-      throw FirebaseAuthException(code: "ERROR_ABORTED_BY_USER", message: "Sign in aborted by user");
-    }
-    final GoogleSignInAuthentication googleAuth=await googleUser.authentication;
-    final OAuthCredential credential=GoogleAuthProvider.credential(
-      accessToken: googleAuth.accessToken,
-      idToken: googleAuth.idToken,
-    );
-    return await FirebaseAuth.instance.signInWithCredential(credential);
+  Future<User?> signInWithGoogle()async {
+    try {
+      final GoogleSignIn googleSignIn = new GoogleSignIn(clientId: "911543359195-9fjnh5cp2tspg5fm3ec1k882fkmeuhrt.apps.googleusercontent.com");
+      final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
+      if (googleUser == null) {
+        throw FirebaseAuthException(
+            code: "ERROR_ABORTED_BY_USER", message: "Sign in aborted by user");
+      }
+      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+      final OAuthCredential credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+      final userCredential= await FirebaseAuth.instance.signInWithCredential(credential);
+      final User? user=userCredential.user;
+      if(user!=null){
+        await sendGoogleUserToBackend(user);
+        return user;
+      }
+      return null;
+    }catch(e){throw Exception("Error: $e");}
+  }
+
+  Future<void> sendGoogleUserToBackend(User user) async{
+    try{
+      final url=Uri.parse("http://localhost:8080/api/register");
+      final response=await http.post(
+        url,
+        headers: {"Content-Type":"application/json"},
+        body: jsonEncode({
+          "username": user.displayName,
+          "email":user.email,
+          "phonenum":user.phoneNumber,
+          "password":"GOOGLE_AUTH",
+          "imgurl":user.photoURL,
+        })
+      );
+      if(response.statusCode==200||response.statusCode==201){
+        print("google user saved");
+      }else{
+        print("failed to save google user");
+      }
+    }catch(e){print("Error: $e");}
   }
   Widget build(BuildContext context) {
     return Scaffold(
@@ -158,9 +183,13 @@ class LoginScreenState extends State<LoginScreen>{
                       onTap: () async{
                         if(index==0){
                           try{
-                            await signInWithGoogle();
-                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Sign In With Google Successful!"),));
-                            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>Home()),);
+                            User? user=await signInWithGoogle();
+                            if(user!=null) {
+                              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Sign In With Google Successful!"),));
+                              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Home()),);
+                            }else{
+                              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Sign in was cancelled"),));
+                            }
                           }catch(e){ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error : $e")));}
                         }else{
                           try{

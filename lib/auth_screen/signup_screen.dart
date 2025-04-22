@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:emart_app/auth_screen/login_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 import '../consts/consts.dart';
 import 'package:http/http.dart' as http;
@@ -40,23 +41,34 @@ class _RegisterScreenState extends State<RegisterScreen> {
     }
     final url=Uri.parse("http://localhost:8080/api/register");
     try {
-      final response = await http.post(
-        url,
-        headers: {"Content-Type": "application/json"},
-        body: jsonEncode({
-          "username": nameController.text.trim(),
-          "email": emailController.text.trim(),
-          "phonenum": phoneController.text.trim(),
-          "password": passwordController.text.trim()
-        }),
-      );
-      if(response.statusCode==201){
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("User Registered Successfully!"),));
-        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>LoginScreen()));
+      final credential=await FirebaseAuth.instance.createUserWithEmailAndPassword(
+          email: emailController.text.trim(),
+          password: passwordController.text.trim());
+      final user=credential.user;
+      if(user!=null) {
+        final response = await http.post(
+          url,
+          headers: {"Content-Type": "application/json"},
+          body: jsonEncode({
+            "username": nameController.text.trim(),
+            "email": emailController.text.trim(),
+            "phonenum": phoneController.text.trim(),
+            "password": "FIREBASE_AUTH",
+          }),
+        );
+        if (response.statusCode == 201) {
+          ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text("User Registered Successfully!"),));
+          Navigator.pushReplacement(
+              context, MaterialPageRoute(builder: (context) => LoginScreen()));
+        }
+        else {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text("Failed To Register!: ${response.body}"),));
+        }
+      }else{
+        print("failed to save to sql");
       }
-      else{
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Failed To Register!: ${response.body}"),));
-    }
     }catch(e){ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error: $e")),);}
   }
 

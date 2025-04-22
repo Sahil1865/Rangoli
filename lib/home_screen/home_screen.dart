@@ -1,16 +1,49 @@
+import 'dart:convert';
 import 'dart:ui';
 import 'package:emart_app/consts/lists.dart';
+import 'package:emart_app/home_screen/Product.dart';
 import 'package:emart_app/home_screen/components/feature_button.dart';
 import 'package:emart_app/widgets_common/home_buttons.dart';
 import '../consts/consts.dart';
+import 'package:http/http.dart' as http;
 
-class HomeContentPage extends StatelessWidget {
-  const HomeContentPage({Key? key});
+class HomeContentPage extends StatefulWidget {
+  const HomeContentPage({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    final ScrollController _verticalScrollController = ScrollController();
+  State<HomeContentPage> createState() => _HomeContentPageState();
+}
+class _HomeContentPageState extends State<HomeContentPage>{
+  final ScrollController _verticalScrollController = ScrollController();
+  List<Product> products=[];
+  bool isLoading=true;
 
+  @override
+  void initState(){
+    super.initState();
+    fetchProducts();
+  }
+  Future<void> fetchProducts()async{
+    try{
+      final response=await http.get(
+        Uri.parse("http://localhost:8080/api/products"),
+      );
+      if(response.statusCode==200||response.statusCode==201){
+        final List<dynamic> jsonData=jsonDecode(response.body);
+        setState(() {
+          products=jsonData.map((item)=>Product.fromJson(item)).toList();
+          isLoading=false;
+        });
+      }else{
+        throw Exception("Failed to load products");
+      }
+    }catch(e){print("error fetching products: $e");
+    setState(() {
+      isLoading=false;
+    });}
+  }
+  @override
+  Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(5),
       color: Colors.white,
@@ -128,29 +161,32 @@ class HomeContentPage extends StatelessWidget {
                           child: allproducts.text.color(darkFontGrey).size(22).fontFamily(semibold).make(),
                         ),
                         10.heightBox,
+                        isLoading
+                          ?const CircularProgressIndicator():
                         GridView.builder(
                           physics: const NeverScrollableScrollPhysics(), // Don't scroll inside
                           shrinkWrap: true,
-                          itemCount: 6,
+                          itemCount: products.length,
                           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                             crossAxisCount: 2,
                             mainAxisSpacing: 8,
                             mainAxisExtent: 300,
                           ),
                           itemBuilder: (context, index) {
+                            final product=products[index];
                             return Column(
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
                                 Image.asset(
-                                  imgP1,
+                                  product.imgurl,
                                   height: 200,
                                   width: 200,
                                   fit: BoxFit.cover,
                                 ),
                                 const Spacer(),
-                                "Laptop 4GB/64GB".text.fontFamily(semibold).size(16).color(darkFontGrey).make(),
+                                product.productname.text.fontFamily(semibold).size(16).color(darkFontGrey).make(),
                                 10.heightBox,
-                                "₹30,000".text.color(redColor).fontFamily(bold).size(16).make(),
+                                "₹${product.productprice}".text.color(redColor).fontFamily(bold).size(16).make(),
                                 10.heightBox,
                               ],
                             ).box.gray100.margin(const EdgeInsets.symmetric(horizontal: 4)).roundedSM.padding(const EdgeInsets.all(12)).make();

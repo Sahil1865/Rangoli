@@ -1,3 +1,5 @@
+import 'package:emart_app/auth_screen/login_screen.dart';
+
 import '../account_screen/account_screen.dart';
 import '../cart_screen/cart_screen.dart';
 import '../category_screen/catergory_screen.dart';
@@ -15,12 +17,20 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   int _selectedIndex = 0;
 
-  final List<Widget> _pages = [
-    const HomeContentPage(),
-    const CategoriesPage(),
-    const CartPage(),
-    const AccountPage(),
-  ];
+  Widget _getpages(int index){
+    switch(index){
+      case 0:
+        return const HomeContentPage();
+      case 1:
+        return const CategoriesPage();
+      case 2:
+        return const CartPage();
+      case 3:
+        return AccountPage();
+      default:
+        return LoginScreen();
+    }
+  }
 
   void _onItemTapped(int index) {
     setState(() {
@@ -99,7 +109,7 @@ class _HomeState extends State<Home> {
                 ),
               const SizedBox(height: 0),
               Expanded(
-                child: _pages[_selectedIndex],
+                child: _getpages(_selectedIndex),
               ),
             ],
           ),

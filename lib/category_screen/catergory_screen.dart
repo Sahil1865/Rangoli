@@ -67,7 +67,7 @@ class CategoriesPage extends StatelessWidget {
                       .outerShadowSm
                       .make()
                       .onTap(() {
-                    Get.to(() => CategoryDetails(title: categoriesList[index]));
+                    Get.to(() => CategoryDetails(title: categoriesList[index],categoryname: categoriesListDB[index]));
                   });
                 },
               ),
