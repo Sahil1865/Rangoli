@@ -32,7 +32,7 @@ class LoginScreenState extends State<LoginScreen>{
     if(emailController.text.trim().isEmpty||passwordController.text.trim().isEmpty){
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Please Fill The Text Fields!"),));
     }
-    final url=Uri.parse("http://localhost:8080/api/login");
+    final url=Uri.parse("https://rangoli-backend.onrender.com/api/login");
     try{
       final credential=await FirebaseAuth.instance.signInWithEmailAndPassword(
           email: emailController.text.trim(), 
@@ -85,7 +85,7 @@ class LoginScreenState extends State<LoginScreen>{
 
   Future<void> sendGoogleUserToBackend(User user) async{
     try{
-      final url=Uri.parse("http://localhost:8080/api/register");
+      final url=Uri.parse("https://rangoli-backend.onrender.com/api/register");
       final response=await http.post(
         url,
         headers: {"Content-Type":"application/json"},

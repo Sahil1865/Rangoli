@@ -39,7 +39,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("The passwords do not match!"),));
       return;
     }
-    final url=Uri.parse("http://localhost:8080/api/register");
+    final url=Uri.parse("https://rangoli-backend.onrender.com/api/register");
     try {
       final credential=await FirebaseAuth.instance.createUserWithEmailAndPassword(
           email: emailController.text.trim(),

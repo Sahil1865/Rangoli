@@ -5,7 +5,9 @@ import 'package:flutter/gestures.dart';
 
 class ItemDetails extends StatelessWidget {
   final String? title;
-  const ItemDetails({Key? key, required this.title}) : super(key: key);
+  final String? productprice;
+  final String? imgurl;
+  const ItemDetails({Key? key, required this.title, required this.productprice, required this.imgurl}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +52,7 @@ class ItemDetails extends StatelessWidget {
                           aspectRatio: 16 / 9,
                           itemBuilder: (context, index) {
                             return Image.asset(
-                              imgFc2,
+                              imgurl!,
                               width: double.infinity,
                               fit: BoxFit.cover,
                             );
@@ -68,7 +70,7 @@ class ItemDetails extends StatelessWidget {
                           stepInt: true,
                         ),
                         10.heightBox,
-                        "\$400".text.color(redColor).fontFamily(bold).size(18).make(),
+                        "₹${productprice!}".text.color(redColor).fontFamily(bold).size(18).make(),
                         10.heightBox,
                         Row(
                           children: [
@@ -145,7 +147,7 @@ class ItemDetails extends StatelessWidget {
                                   width: 100,
                                   child: "Total: ".text.color(textfieldGrey).make(),
                                 ),
-                                "\$0.00".text.color(redColor).size(16).fontFamily(bold).make(),
+                                "₹${productprice!}".text.color(redColor).size(16).fontFamily(bold).make(),
                               ],
                             ).box.padding(const EdgeInsets.all(8)).make(),
                           ],

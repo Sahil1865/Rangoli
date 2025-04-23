@@ -26,7 +26,7 @@ class _HomeContentPageState extends State<HomeContentPage>{
   Future<void> fetchProducts()async{
     try{
       final response=await http.get(
-        Uri.parse("http://localhost:8080/api/products"),
+        Uri.parse("https://rangoli-backend.onrender.com/api/products"),
       );
       if(response.statusCode==200||response.statusCode==201){
         final List<dynamic> jsonData=jsonDecode(response.body);

@@ -27,7 +27,7 @@ class _CategoryDetailsState extends State<CategoryDetails>{
     getFilteredProducts();
   }
   Future<void> getFilteredProducts()async{
-    final url=Uri.parse("http://localhost:8080/api/product/categories?categoryname=${widget.categoryname}");
+    final url=Uri.parse("https://rangoli-backend.onrender.com/api/product/categories?categoryname=${widget.categoryname}");
     try {
       final response = await http.get(
         url,
@@ -158,7 +158,7 @@ class _CategoryDetailsState extends State<CategoryDetails>{
                               .outerShadowSm
                               .padding(const EdgeInsets.all(12))
                               .make().onTap((){
-                            Get.to(() => ItemDetails(title: product.productname));
+                            Get.to(() => ItemDetails(title: product.productname,productprice: product.productprice, imgurl: product.imgurl));
                           });
                         },
                       ),

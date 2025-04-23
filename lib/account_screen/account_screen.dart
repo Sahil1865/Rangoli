@@ -27,7 +27,7 @@ class _AccountScreenState extends State<AccountPage>{
   }
 
   Future<Map<String,dynamic>?> loadUserData(String email) async{
-    final url=Uri.parse("http://localhost:8080/api/account?email=$email");
+    final url=Uri.parse("https://rangoli-backend.onrender.com/api/account?email=$email");
     final response=await http.get(
       url,
       headers: {"Content-Type":"application/json"},
